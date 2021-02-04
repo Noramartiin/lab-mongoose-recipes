@@ -18,69 +18,63 @@ mongoose
     console.log(`Connected to the database: "${self.connection.name}"`);
     // Before adding any documents to the database, let's delete all previous entries
     return self.connection.dropDatabase();
-  });
+  })
 
-// .then(() => {
+  .then(() => {
+    //CREATE NEW RECIPE
+    let newRecipe = Recipe.create({
+      title: "Pasta",
+      level: "Easy Peasy",
+      ingredients: ["pasta", "tomatoes", "cheese", "tomate-sauce"],
+      cuisine: "Italian",
+      dysType: "main_course",
+      image:
+        "https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2018/07/roasted-tomato-basil-portion-800x1200.jpg",
+      duration: 30,
+      creator: "Christian",
+    })
+      .then((recipe) => {
+        console.log(recipe.title);
+      })
+      .catch(() => {
+        console.log("Wrong");
+      });
 
-//CREATE NEW RECIPE
-let newRecipe = Recipe.create({
-  title: "Pasta",
-  level: "Easy Peasy",
-  ingredients: ["pasta", "tomatoes", "cheese", "tomate-sauce"],
-  cuisine: "Italian",
-  dysType: "main_course",
-  image:
-    "https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2018/07/roasted-tomato-basil-portion-800x1200.jpg",
-  duration: 30,
-  creator: "Christian",
-});
-// .then((recipe) => {
-//   console.log(recipe.title);
-// })
-// .catch(() => {
-//   console.log("Wrong");
-// });
+    //AD MANY RECIPES
+    let manyRecipes = Recipe.insertMany(data)
+      .then((recipes) => {
+        recipes.forEach((recipe) => {
+          console.log(recipe.title);
+        });
+      })
+      .catch(() => {
+        console.log("error");
+      });
 
-//AD MANY RECIPES
-let manyRecipes = Recipe.insertMany(data);
-// .then((recipes) => {
-//   recipes.forEach((recipe) => {
-//     console.log(recipe.title);
-//   });
-// })
-// .catch(() => {
-//   console.log("error");
-// });
-//UPDATE RECIPE
+    Promise.all([newRecipe, manyRecipes]).then((recipe) => {
+      //UPDATE RECIPE
 
-let updatedRecipe = Recipe.updateOne(
-  { title: "Rigatoni alla Genovese" },
-  { duration: 100 }
-);
-// .then((recipe) => {
-//   console.log("You have updated the recipe", recipe);
-// })
-// .catch(() => {
-//   console.log("error");
-// });
+      let updatedRecipe = Recipe.updateOne(
+        { title: "Rigatoni alla Genovese" },
+        { duration: 100 }
+      )
+        .then((recipe) => {
+          console.log("You have updated the recipe", recipe);
+        })
+        .catch(() => {
+          console.log("error");
+        });
 
-//DELETE ONE
-let deletedRecipe = Recipe.deleteOne({ title: "Carrot Cake" });
-// .then(() => {
-//   console.log("You have delete the recipe");
-// })
-// .catch(() => {
-//   console.log("error");
-// });
-
-Promise.all([newRecipe, manyRecipes, updatedRecipe, deletedRecipe])
-  .then((recipe) => {
-    console.log(recipe[0].title);
-    recipe[1].forEach((recipe) => {
-      console.log(recipe.title);
+      //DELETE ONE
+      let deletedRecipe = Recipe.deleteOne({ title: "Carrot Cake" })
+        .then(() => {
+          console.log("You have delete the recipe");
+        })
+        .catch(() => {
+          console.log("error");
+        });
     });
-    console.log("You have updated the recipe");
-    console.log("You have delete the recipe");
+
     mongoose.connection.close();
   })
   .catch((error) => {
